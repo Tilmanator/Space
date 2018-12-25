@@ -31,7 +31,7 @@ link_directories(
 include_directories(
         ${GTKMM_INCLUDE_DIRS}  )
 
-add_executable(space main.cpp)
+add_executable(space main.cpp MainWindow.cpp MainWindow.h du_comp.h)
 
 target_link_libraries(space
         ${ALL_LIBS}
