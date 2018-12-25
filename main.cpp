@@ -5,9 +5,15 @@
 #include <string>
 #include <array>
 #include <string>
+#include <vector>
+#include <algorithm>
+
+#include <gtkmm/application.h>
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/path.hpp>
+
+#include "MainWindow.h"
 
 #define MAX_FILES 100
 
@@ -32,10 +38,29 @@ int main(int argc, char *argv[]) {
     unsigned int cnt{0};
     fs::directory_iterator end_iter;
 
+    std::vector<std::pair<int, std::string>> v;
+
     // Count number of items in directory
     for (fs::directory_iterator dir_itr(p); dir_itr != end_iter; ++dir_itr) {
+        std::stringstream tmp = std::stringstream(exec(("du -s '" + dir_itr->path().string() + "'").c_str()));
+
+        int length;
+        std::string path;
+        tmp >> length;
+        std::getline(tmp, path);
+        fs::path tmp_path(path);
+
         ++cnt;
+        v.emplace_back(std::make_pair(length, tmp_path.filename().string()));
     }
+
+    // Descending order
+    std::sort(v.rbegin(), v.rend());
+
+    for (auto i:v) {
+        std::cout << i.first << " " << i.second << std::endl;
+    }
+
 
     if (cnt > MAX_FILES) {
         std::cout << "Limiting to biggest " << MAX_FILES << " files/dirs." << std::endl;
@@ -48,6 +73,10 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    std::cout << cnt << std::endl;
+    // Set up GUI
+//    auto app = Gtk::Application::create(argc, argv);
+//    MainWindow window;
+//    window.set_default_size(200, 200);
+//    app->run(window);
     return 0;
 }
